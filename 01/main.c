@@ -8,7 +8,7 @@ int compare(const void *a, const void *b) {
 void resizearr(int **vals, size_t cap) {
     int *nvals = realloc(*vals, cap * sizeof(int));
     if (nvals == NULL) {
-        free(vals);
+        free(*vals);
         printf("realloc failure\n");
         exit(EXIT_FAILURE);
     }
