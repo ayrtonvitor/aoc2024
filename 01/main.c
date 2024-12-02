@@ -25,6 +25,37 @@ int countequals(int *vals, size_t i, size_t len, int val) {
     return counts;
 }
 
+void puzzle1(int len, int *vals1, int *vals2) {
+    qsort(vals1, len, sizeof(int), compare);
+    qsort(vals2, len, sizeof(int), compare);
+
+    long long diff = 0;
+    for (int i=0; i < len; i++) {
+        int x = vals1[i];
+        int y = vals2[i];
+        diff += x > y ? x - y : y - x;
+    }
+    printf("Total difference: %lld\n", diff);
+}
+
+void puzzle2(int len, int *vals1, int *vals2) {
+    long long sim = 0;
+    size_t l = 0, r = 0;
+    while (l < len && r < len) {
+        while (l < len && vals1[l] < vals2[r]) { l++; }
+        while (r < len && vals1[l] > vals2[r]) { r++; }
+        if (l >= len || r >= len) { break; }
+
+        int val = vals1[l];
+        int lcounts = countequals(vals1, l, len, val);
+        int rcounts = countequals(vals2, r, len, val);
+        sim += val * lcounts * rcounts;
+        l += lcounts;
+        r += rcounts;
+    }
+    printf("Similarity: %lld\n", sim);
+}
+
 int main(int argc, char *argv[]) {
     if (argc !=2) {
         printf("File name required\n");
@@ -58,32 +89,9 @@ int main(int argc, char *argv[]) {
         vals2[len] = n2;
         len++;
     }
-    qsort(vals1, len, sizeof(int), compare);
-    qsort(vals2, len, sizeof(int), compare);
 
-    long long diff = 0;
-    for (int i=0; i < len; i++) {
-        int x = vals1[i];
-        int y = vals2[i];
-        diff += x > y ? x - y : y - x;
-    }
-    printf("Total difference: %lld\n", diff);
-
-    long long sim = 0;
-    size_t l = 0, r = 0;
-    while (l < len && r < len) {
-        while (l < len && vals1[l] < vals2[r]) { l++; }
-        while (r < len && vals1[l] > vals2[r]) { r++; }
-        if (l >= len || r >= len) { break; }
-
-        int val = vals1[l];
-        int lcounts = countequals(vals1, l, len, val);
-        int rcounts = countequals(vals2, r, len, val);
-        sim += val * lcounts * rcounts;
-        l += lcounts;
-        r += rcounts;
-    }
-    printf("Similarity: %lld\n", sim);
+    puzzle1(len, vals1, vals2);
+    puzzle2(len, vals1, vals2);
 
     fclose(file);
     return 0;
